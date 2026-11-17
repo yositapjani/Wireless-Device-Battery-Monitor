@@ -445,7 +445,10 @@ int CountSshSessions() {
     int sessions = 0;
     if (!sshd.empty() && Process32FirstW(snap, &pe)) {
         do {
-            if (sshd.count(pe.th32ParentProcessID)) sessions++;
+            // Count only real session shells: the per-connection sshd.exe processes are
+            // themselves children of sshd.exe, so counting them would inflate the number
+            // (1 real session = 2 sshd.exe children + 1 shell).
+            if (sshd.count(pe.th32ParentProcessID) && _wcsicmp(pe.szExeFile, L"sshd.exe") != 0) sessions++;
         } while (Process32NextW(snap, &pe));
     }
     CloseHandle(snap);
