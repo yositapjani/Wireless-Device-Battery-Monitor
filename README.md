@@ -1,4 +1,6 @@
-# Wireless Battery
+# Wireless+ Battery
+
+> **Fork note:** this is a fork of [krisgfx9/Wireless-Device-Battery-Monitor](https://github.com/krisgfx9/Wireless-Device-Battery-Monitor) (GPL-3.0, by krisgfx9), renamed to **Wireless+ Battery**. Everything below is the upstream README, plus one addition: **lock-key indicators** (see below). Internal identifiers (registry key, window class, mutex, exe name) are unchanged on purpose, so settings and autostart carry over from the upstream app.
 
 [![Support me on Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20me-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/krisgfx)
 [![Donate with PayPal](https://img.shields.io/badge/PayPal-Donate-00457C?logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/krisgfx)
@@ -35,6 +37,25 @@ Battery levels of your wireless mouse, headset, keyboard and controller, right o
 **Tray icons:** one icon per device with the number drawn in it, plus a "Low battery" notification at 15%. The app switches to this automatically when the taskbar is vertical or can't be found.
 
 Hover for details. Click for the menu: every device (click one to hide or show it), display mode, *Refresh now*, *Start with Windows*, and *Exit*. Levels refresh every 60 seconds, and right away when a device is plugged in or the PC wakes up.
+
+## Lock-key indicators (fork addition)
+
+For keyboards with no Caps Lock LED: each lock key gets its own tray icon that is **always on** while the feature is enabled — even when the taskbar widget is active. The icon follows the toggle state, polled every 150 ms:
+
+- **Caps Lock** (`A`): on by default. Bright letter with a full green bar when ON, dim letter with a faint track when OFF. Hover shows `Caps Lock: ON/OFF`.
+- **Num Lock** (`1`) and **Scroll Lock** (`S`): off by default; turn them on from the menu.
+- Toggle each indicator in the menu (*Caps Lock indicator*, *Num Lock indicator*, *Scroll Lock indicator*); the choice is remembered in the registry.
+- `WirelessBattery.exe --locks` prints the three toggle states plus the number of active SSH sessions to the console (handy for scripting or debugging).
+- Note: Print Screen and Pause/Break have no on/off state, so there is nothing to indicate for them.
+- If a lock icon first lands in the hidden tray overflow (the `^` arrow), drag it out onto the taskbar once — Windows then keeps it visible.
+
+## SSH connection indicator (fork addition)
+
+The same signal as the standalone `ssh-indicator.ps1`: an SSH session counts as active when an `sshd.exe` process has a child process (the session shell). A tray icon shows `SSH` — bright with a full green bar while at least one session is connected, dim when idle — and the tooltip says how many sessions are connected. Polled every 2 seconds. Toggle it in the menu (*SSH connection indicator*); on by default.
+
+## Shutdown / restart timer (fork addition)
+
+From the menu: *Shutdown timer* or *Restart timer* → in 15 minutes, 30 minutes, 1 hour, 2 hours, or 4 hours. It runs the real Windows `shutdown.exe /s|/r /t <seconds>`, so the countdown keeps running even if the app is closed, and Windows shows its own sign-out warning near the end. The remaining time shows in the taskbar tooltip and in the menu (*Cancel Shutdown in 42m 10s*); scheduling a new timer replaces the old one. The schedule survives an app restart (remembered in the registry).
 
 ## Supported devices
 

@@ -48,7 +48,7 @@ struct State {
     GtkApplication* app = nullptr;
     GDBusConnection* conn = nullptr;
     GVariant* pixmap = nullptr;           // a(iiay), cached for SNI property reads
-    std::string tooltip = "Wireless Battery";
+    std::string tooltip = "Wireless+ Battery";
     std::vector<DeviceStatus> devices;
     std::vector<std::string> deviceActions;
     std::vector<MenuNode> menuNodes;  // com.canonical.dbusmenu tree (id 0 is the root)
@@ -106,7 +106,7 @@ void ApplyAutostart(bool on) {
     g_autofree gchar* exe = g_file_read_link("/proc/self/exe", nullptr);
     if (!exe) return;
     std::string content =
-        "[Desktop Entry]\nType=Application\nName=Wireless Battery\n"
+        "[Desktop Entry]\nType=Application\nName=Wireless+ Battery\n"
         "Comment=Show battery levels of wireless devices in the tray\n"
         "Exec=\"" + std::string(exe) + "\"\nNoDisplay=true\nX-GNOME-Autostart-enabled=true\n";
     g_file_set_contents(path.c_str(), content.c_str(), (gssize)content.size(), nullptr);
@@ -307,7 +307,7 @@ void RebuildMenu() {
 void RecomputePresentation() {
     int pct = -1;
     bool charging = false, dim = false, low = false, any = false;
-    std::string tip = "Wireless Battery";
+    std::string tip = "Wireless+ Battery";
     for (const auto& s : g.devices) {
         if (!IsVisible(s)) continue;
         any = true;
@@ -315,11 +315,11 @@ void RecomputePresentation() {
         else dim = true;
         charging |= s.charging;
         if (s.percent >= 0 && s.percent <= kLowBattery && !s.charging) low = true;
-        if (tip != "Wireless Battery") tip += "\n";
+        if (tip != "Wireless+ Battery") tip += "\n";
         else tip = "";
         tip += WideToUtf8(s.name) + ": " + WideToUtf8(StatusText(s));
     }
-    if (!any) { pct = -1; tip = "Wireless Battery\nNo devices with battery info found"; }
+    if (!any) { pct = -1; tip = "Wireless+ Battery\nNo devices with battery info found"; }
     if (g.pixmap) g_variant_unref(g.pixmap);
     g.pixmap = RenderPixmap(pct, charging, dim, low);
     g.tooltip = tip;
@@ -393,13 +393,13 @@ static GVariant* sni_get_property(GDBusConnection*, const gchar*, const gchar*, 
                                   const gchar* name, GError**, gpointer) {
     if (!strcmp(name, "Id")) return g_variant_new_string("wireless-battery");
     if (!strcmp(name, "Category")) return g_variant_new_string("SystemServices");
-    if (!strcmp(name, "Title")) return g_variant_new_string("Wireless Battery");
+    if (!strcmp(name, "Title")) return g_variant_new_string("Wireless+ Battery");
     if (!strcmp(name, "IconName")) return g_variant_new_string("battery-good-symbolic");
     if (!strcmp(name, "IconPixmap"))
         return g.pixmap ? g_variant_ref(g.pixmap) : RenderPixmap(-1, false, true, false);
     if (!strcmp(name, "ToolTip")) {
         GVariant* px = g.pixmap ? g_variant_ref(g.pixmap) : RenderPixmap(-1, false, true, false);
-        return g_variant_new("(s@a(iiay)ss)", "", px, "Wireless Battery", g.tooltip.c_str());
+        return g_variant_new("(s@a(iiay)ss)", "", px, "Wireless+ Battery", g.tooltip.c_str());
     }
     if (!strcmp(name, "Menu")) return g_variant_new_object_path(kMenuPath);
     if (!strcmp(name, "ItemIsMenu")) return g_variant_new_boolean(TRUE);
@@ -639,7 +639,7 @@ int QuitRunning() {
     GVariant* reply = g_dbus_connection_call_sync(conn, kAppId, kSniPath,
                                                   "com.github.krisgfx9.WirelessBattery", "Quit",
                                                   nullptr, nullptr, G_DBUS_CALL_FLAGS_NONE, 3000, nullptr, &error);
-    if (!reply) { fprintf(stderr, "Is Wireless Battery running? %s\n", error->message); g_error_free(error); }
+    if (!reply) { fprintf(stderr, "Is Wireless+ Battery running? %s\n", error->message); g_error_free(error); }
     else g_variant_unref(reply);
     g_object_unref(conn);
     return 0;

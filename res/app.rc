@@ -13,8 +13,8 @@ BEGIN
   BEGIN
     BLOCK "040904B0"
     BEGIN
-      VALUE "FileDescription", "Wireless Battery"
-      VALUE "ProductName", "Wireless Battery"
+      VALUE "FileDescription", "Wireless+ Battery"
+      VALUE "ProductName", "Wireless+ Battery"
       VALUE "FileVersion", "1.0.0"
       VALUE "ProductVersion", "1.0.0"
       VALUE "OriginalFilename", "WirelessBattery.exe"

@@ -1,4 +1,4 @@
-; Inno Setup script for Wireless Battery (https://jrsoftware.org/isinfo.php).
+; Inno Setup script for Wireless+ Battery (https://jrsoftware.org/isinfo.php).
 ; Per-user install by default: no administrator rights needed, installs to %LOCALAPPDATA%\Programs.
 ; Setup also offers "Install for all users" (Program Files, needs administrator rights).
 ; Build with installer\build-installer.ps1 (or: ISCC /DAppVersion=1.2.3 installer\WirelessBattery.iss).
@@ -10,11 +10,11 @@
 
 [Setup]
 AppId={{7E0B5C2A-3F4D-4C8E-9B61-2D5A8F1C4E93}
-AppName=Wireless Battery
+AppName=Wireless+ Battery
 AppVersion={#AppVersion}
-AppVerName=Wireless Battery {#AppVersion}
-AppPublisher=Wireless Battery contributors
-DefaultDirName={autopf}\Wireless Battery
+AppVerName=Wireless+ Battery {#AppVersion}
+AppPublisher=Wireless+ Battery contributors
+DefaultDirName={autopf}\Wireless+ Battery
 DisableProgramGroupPage=yes
 DisableDirPage=auto
 PrivilegesRequired=lowest
@@ -23,17 +23,17 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 OutputDir={#Root}\dist
-OutputBaseFilename=WirelessBattery-Setup-{#AppVersion}
+OutputBaseFilename=WirelessPlusBattery-Setup-{#AppVersion}
 SetupIconFile={#Root}\res\app.ico
 UninstallDisplayIcon={app}\WirelessBattery.exe
-UninstallDisplayName=Wireless Battery
+UninstallDisplayName=Wireless+ Battery
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
 CloseApplications=no
 
 [Tasks]
-Name: "autostart"; Description: "Start Wireless Battery when I sign in to Windows"
+Name: "autostart"; Description: "Start Wireless+ Battery when I sign in to Windows"
 
 [Files]
 Source: "{#Root}\WirelessBattery.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -42,11 +42,11 @@ Source: "{#Root}\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ign
 Source: "{#Root}\installer\THIRD_PARTY_NOTICES.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\Wireless Battery"; Filename: "{app}\WirelessBattery.exe"
+Name: "{autoprograms}\Wireless+ Battery"; Filename: "{app}\WirelessBattery.exe"
 
 [Run]
-Filename: "{app}\WirelessBattery.exe"; Description: "Start Wireless Battery now"; Flags: nowait postinstall skipifsilent
-Filename: "https://ko-fi.com/krisgfx"; Description: "Enjoying Wireless Battery? Support it on Ko-fi"; Flags: shellexec postinstall unchecked skipifsilent nowait runasoriginaluser
+Filename: "{app}\WirelessBattery.exe"; Description: "Start Wireless+ Battery now"; Flags: nowait postinstall skipifsilent
+Filename: "https://ko-fi.com/krisgfx"; Description: "Enjoying Wireless+ Battery? Support it on Ko-fi"; Flags: shellexec postinstall unchecked skipifsilent nowait runasoriginaluser
 
 [UninstallRun]
 Filename: "{app}\WirelessBattery.exe"; Parameters: "--quit"; Flags: runhidden waituntilterminated; RunOnceId: "QuitApp"

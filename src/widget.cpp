@@ -371,7 +371,7 @@ bool Create(HINSTANCE inst, HWND notifyWnd, UINT clickMsg, bool lightTheme) {
         ti.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
         ti.hwnd = notifyWnd;
         ti.uId = (UINT_PTR)g_wnd;
-        ti.lpszText = const_cast<wchar_t*>(L"Wireless Battery");
+        ti.lpszText = const_cast<wchar_t*>(L"Wireless+ Battery");
         SendMessageW(g_tip, TTM_ADDTOOLW, 0, (LPARAM)&ti);
         SendMessageW(g_tip, TTM_SETMAXTIPWIDTH, 0, 600);
     }
