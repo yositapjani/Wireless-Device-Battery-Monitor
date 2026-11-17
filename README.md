@@ -40,18 +40,18 @@ Hover for details. Click for the menu: every device (click one to hide or show i
 
 ## Lock-key indicators (fork addition)
 
-For keyboards with no Caps Lock LED: each lock key gets its own tray icon that is **always on** while the feature is enabled — even when the taskbar widget is active. The icon follows the toggle state, polled every 150 ms:
+For keyboards with no Caps Lock LED: each lock key gets its own indicator that is **always visible** — in the taskbar strip next to the battery devices when the widget is active, or as a tray icon in tray-icon mode. The indicator follows the toggle state, polled every 150 ms:
 
-- **Caps Lock** (`A`): on by default. Bright letter with a full green bar when ON, dim letter with a faint track when OFF. Hover shows `Caps Lock: ON/OFF`.
+- **Caps Lock** (`A`): on by default. Bright letter when ON, dim letter when OFF. Hover shows `Caps Lock: ON/OFF`.
 - **Num Lock** (`1`) and **Scroll Lock** (`S`): off by default; turn them on from the menu.
 - Toggle each indicator in the menu (*Caps Lock indicator*, *Num Lock indicator*, *Scroll Lock indicator*); the choice is remembered in the registry.
 - `WirelessBattery.exe --locks` prints the three toggle states plus the number of active SSH sessions to the console (handy for scripting or debugging).
 - Note: Print Screen and Pause/Break have no on/off state, so there is nothing to indicate for them.
-- If a lock icon first lands in the hidden tray overflow (the `^` arrow), drag it out onto the taskbar once — Windows then keeps it visible.
+- If a tray icon first lands in the hidden tray overflow (the `^` arrow), drag it out onto the taskbar once — Windows then keeps it visible.
 
 ## SSH connection indicator (fork addition)
 
-The same signal as the standalone `ssh-indicator.ps1`: an SSH session counts as active when an `sshd.exe` process has a child process (the session shell). A tray icon shows `SSH` — bright with a full green bar while at least one session is connected, dim when idle — and the tooltip says how many sessions are connected. Polled every 2 seconds. Toggle it in the menu (*SSH connection indicator*); on by default.
+The same signal as the standalone `ssh-indicator.ps1`: an SSH session counts as active when an `sshd.exe` process has a child process (the session shell). It shows `SSH` — bright with a full green bar while at least one session is connected, dim when idle — and the tooltip says how many sessions are connected. Polled every 2 seconds. Toggle it in the menu (*SSH connection indicator*); on by default. In taskbar-widget mode it sits in the strip next to the battery devices; in tray-icon mode it is a separate tray icon.
 
 ## Shutdown / restart timer (fork addition)
 

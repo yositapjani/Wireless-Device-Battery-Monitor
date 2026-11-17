@@ -373,6 +373,8 @@ void UpdatePlaceholder() {
 // devices: they stay in the tray even while the taskbar widget is active ("always on"), and
 // each can be switched on/off in the menu. Print Screen and Pause/Break have no on/off state,
 // so there is nothing to show for them.
+void UpdateWidget();  // defined below; the lock/SSH pollers refresh the strip on state changes
+
 struct LockEntry {
     int vk;
     const wchar_t* name;
@@ -401,11 +403,21 @@ void PollLocks() {
         if (!lk.enabled) {
             if (lk.added) { TrayDelete(lk.uid); lk.added = false; }
             if (lk.icon) { DestroyIcon(lk.icon); lk.icon = nullptr; }
-            lk.sig.clear();
+            if (!lk.sig.empty()) { lk.sig.clear(); UpdateWidget(); }
             continue;
         }
         bool on = (GetKeyState(lk.vk) & 1) != 0;
         std::wstring sig = std::wstring(on ? L"1" : L"0") + (g_lightTaskbar ? L"l" : L"k");
+        if (g_useWidget) {
+            // The strip shows it, next to the battery devices; no tray icon in this mode.
+            if (lk.added) { TrayDelete(lk.uid); lk.added = false; }
+            if (on != lk.on || sig != lk.sig) {
+                lk.on = on;
+                lk.sig = sig;
+                UpdateWidget();
+            }
+            continue;
+        }
         if (on != lk.on || sig != lk.sig || !lk.icon) {
             lk.on = on;
             if (lk.icon) DestroyIcon(lk.icon);
@@ -460,12 +472,23 @@ void PollSsh() {
     if (!g_showSsh) {
         if (g_sshAdded) { TrayDelete(g_sshUid); g_sshAdded = false; }
         if (g_sshIcon) { DestroyIcon(g_sshIcon); g_sshIcon = nullptr; }
-        g_sshSig.clear();
+        if (!g_sshSig.empty()) { g_sshSig.clear(); UpdateWidget(); }
         return;
     }
     int n = CountSshSessions();
     bool on = n > 0;
     std::wstring sig = std::to_wstring(n) + (g_lightTaskbar ? L"l" : L"k");
+    if (g_useWidget) {
+        // The strip shows it; make sure no tray icon lingers from tray mode.
+        if (g_sshAdded) { TrayDelete(g_sshUid); g_sshAdded = false; }
+        if (on != g_sshOn || sig != g_sshSig) {
+            g_sshOn = on;
+            g_sshSessions = n;
+            g_sshSig = sig;
+            UpdateWidget();
+        }
+        return;
+    }
     if (on != g_sshOn || sig != g_sshSig || !g_sshIcon) {
         g_sshOn = on;
         g_sshSessions = n;
@@ -562,6 +585,28 @@ void UpdateWidget() {
         items.push_back(it);
         if (!tip.empty()) tip += L"\n";
         tip += e->st.name + L": " + StatusText(*e);
+    }
+    // Fork additions: lock-key and SSH indicators sit in the strip next to the battery
+    // devices — bright when active, dim when idle — so they are always visible.
+    for (auto& lk : g_locks) {
+        if (!lk.enabled) continue;
+        WidgetItem it;
+        it.kind = DeviceKind::Keyboard;
+        it.text = lk.label;  // "A" / "1" / "S"
+        it.dim = !lk.on;
+        items.push_back(it);
+        if (!tip.empty()) tip += L"\n";
+        tip += std::wstring(lk.name) + L": " + (lk.on ? L"ON" : L"OFF");
+    }
+    if (g_showSsh) {
+        WidgetItem it;
+        it.kind = DeviceKind::Other;
+        it.text = L"SSH";
+        it.dim = !g_sshOn;
+        items.push_back(it);
+        if (!tip.empty()) tip += L"\n";
+        tip += g_sshOn ? (L"SSH: " + std::to_wstring(g_sshSessions) + (g_sshSessions == 1 ? L" session connected" : L" sessions connected"))
+                       : L"SSH: no sessions";
     }
     if (tip.empty()) tip = L"Wireless+ Battery: no devices with battery info found";
     std::wstring power = PowerStatusText();
@@ -713,6 +758,8 @@ void Reconcile() {
     g_useWidget = alive;
     if (changed) {
         for (auto& [k, e] : g_entries) ApplyEntry(e);
+        PollLocks();  // moves the lock indicators between strip and tray icons
+        PollSsh();    // same for the SSH indicator
         UpdatePlaceholder();
         UpdateWidget();
     } else if (g_useWidget) {
